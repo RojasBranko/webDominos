@@ -1,0 +1,122 @@
+---
+import Layout from "../layouts/Layout.astro"
+---
+
+<Layout title="inventario">
+    <head>
+        <meta charset="UTF-8">
+        <title>Gestión de Productos</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-gray-800 text-white">
+        <div class="container mx-auto p-4">
+            <h1 class="text-2xl mb-4">Ingresar Producto</h1>
+            <form id="producto-form" class="mb-4">
+                <input type="text" id="nombre" placeholder="Nombre" required class="p-2 mb-2 w-full bg-gray-700 border border-gray-600 text-white">
+                <input type="number" id="peso" placeholder="Peso" required class="p-2 mb-2 w-full bg-gray-700 border border-gray-600 text-white">
+                <input type="number" id="pesoBruto" placeholder="Peso Bruto" required class="p-2 mb-2 w-full bg-gray-700 border border-gray-600 text-white">
+                <button type="submit" class="p-2 bg-blue-600 hover:bg-blue-700">Agregar Producto</button>
+            </form>
+    
+            <h1 class="text-2xl mb-4">Tabla de Productos</h1>
+            <div class="overflow-x-auto">
+                <div class="py-2 inline-block min-w-full">
+                    <div class="overflow-hidden">
+                        <table class="min-w-full">
+                            <thead class="border-b">
+                                <tr>
+                                    <th scope="col" class="text-sm font-medium text-white px-6 py-4 text-left">#</th>
+                                    <th scope="col" class="text-sm font-medium text-white px-6 py-4 text-left">Nombre</th>
+                                    <th scope="col" class="text-sm font-medium text-white px-6 py-4 text-left">Peso</th>
+                                    <th scope="col" class="text-sm font-medium text-white px-6 py-4 text-left">Peso Bruto</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productos-tbody">
+                                <!-- Las filas se agregarán aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <button id="borrar-productos" class="mt-4 p-2 bg-red-600 hover:bg-red-700">Borrar Todos los Productos</button>
+                    <button id="editar-productos" class="mt-4 p-2 bg-yellow-500 hover:bg-yellow-600">Editar Producto Seleccionado</button>
+                </div>
+            </div>
+        </div>
+    </body>
+</Layout>
+
+<script>
+    let editIndex = -1;
+
+    document.getElementById('producto-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const nombre = document.getElementById('nombre').value;
+        const peso = document.getElementById('peso').value;
+        const pesoBruto = document.getElementById('pesoBruto').value;
+
+        const producto = { nombre, peso, pesoBruto };
+        const productos = JSON.parse(localStorage.getItem('productos')) || [];
+
+        if (editIndex >= 0) {
+            // Editar producto existente
+            productos[editIndex] = producto;
+            editIndex = -1; // Resetear índice de edición
+        } else {
+            // Agregar nuevo producto
+            productos.push(producto);
+        }
+
+        localStorage.setItem('productos', JSON.stringify(productos));
+        document.getElementById('producto-form').reset();
+        cargarProductos(); // Actualiza la tabla
+    });
+
+    function cargarProductos() {
+        const productos = JSON.parse(localStorage.getItem('productos')) || [];
+        const tbody = document.getElementById('productos-tbody');
+        tbody.innerHTML = '';
+
+        productos.forEach((producto, index) => {
+            const tr = document.createElement('tr');
+            tr.className = 'border-b';
+            tr.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                    <input type="checkbox" class="seleccionar-producto" data-index="${index}">
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">${index + 1}</td>
+                <td class="text-sm text-white font-light px-6 py-4 whitespace-nowrap">${producto.nombre}</td>
+                <td class="text-sm text-white font-light px-6 py-4 whitespace-nowrap">${producto.peso}</td>
+                <td class="text-sm text-white font-light px-6 py-4 whitespace-nowrap">${producto.pesoBruto}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function editarProducto() {
+        const checkboxes = document.querySelectorAll('.seleccionar-producto:checked');
+        if (checkboxes.length === 0) {
+            alert('Selecciona un producto para editar.');
+            return;
+        }
+
+        const index = checkboxes[0].dataset.index;
+        const productos = JSON.parse(localStorage.getItem('productos')) || [];
+        const producto = productos[index];
+
+        // Rellenar los campos del formulario con los datos del producto
+        document.getElementById('nombre').value = producto.nombre;
+        document.getElementById('peso').value = producto.peso;
+        document.getElementById('pesoBruto').value = producto.pesoBruto;
+
+        editIndex = index; // Guardar el índice de edición
+    }
+
+    function borrarProductos() {
+        localStorage.removeItem('productos'); // Eliminar productos del localStorage
+        cargarProductos(); // Recargar la tabla
+    }
+
+    document.getElementById('borrar-productos').addEventListener('click', borrarProductos);
+    document.getElementById('editar-productos').addEventListener('click', editarProducto);
+    document.addEventListener('DOMContentLoaded', cargarProductos);
+</script>
