@@ -1,7 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro"
 ---
-
 <Layout title="inventario">
     <head>
         <meta charset="UTF-8">
@@ -10,15 +9,15 @@ import Layout from "../layouts/Layout.astro"
     </head>
     <body class="bg-gray-800 text-white">
         <div class="container mx-auto p-4">
-            <h1 class="text-2xl mb-4">Ingresar Producto</h1>
+            <h1 class="text-2xl mb-4 text-white">Ingresar Producto</h1>
             <form id="producto-form" class="mb-4">
                 <input type="text" id="nombre" placeholder="Nombre" required class="p-2 mb-2 w-full bg-gray-700 border border-gray-600 text-white">
                 <input type="number" id="peso" placeholder="Peso" required class="p-2 mb-2 w-full bg-gray-700 border border-gray-600 text-white">
                 <input type="number" id="pesoBruto" placeholder="Peso Bruto" required class="p-2 mb-2 w-full bg-gray-700 border border-gray-600 text-white">
-                <button type="submit" class="p-2 bg-blue-600 hover:bg-blue-700">Agregar Producto</button>
+                <button type="submit" class="p-2 bg-blue-600 hover:bg-blue-700 text-white">Agregar Producto</button>
             </form>
     
-            <h1 class="text-2xl mb-4">Tabla de Productos</h1>
+            <h1 class="text-2xl mb-4 text-white">Tabla de Productos</h1>
             <div class="overflow-x-auto">
                 <div class="py-2 inline-block min-w-full">
                     <div class="overflow-hidden">
@@ -36,8 +35,8 @@ import Layout from "../layouts/Layout.astro"
                             </tbody>
                         </table>
                     </div>
-                    <button id="borrar-productos" class="mt-4 p-2 bg-red-600 hover:bg-red-700">Borrar Todos los Productos</button>
-                    <button id="editar-productos" class="mt-4 p-2 bg-yellow-500 hover:bg-yellow-600">Editar Producto Seleccionado</button>
+                    <button id="borrar-productos" class="mt-4 p-2 bg-red-600 hover:bg-red-700 text-white">Borrar Todos los Productos</button>
+                    <button id="editar-productos" class="mt-4 p-2 bg-yellow-500 hover:bg-yellow-600 text-white">Editar Producto Seleccionado</button>
                 </div>
             </div>
         </div>
@@ -58,17 +57,15 @@ import Layout from "../layouts/Layout.astro"
         const productos = JSON.parse(localStorage.getItem('productos')) || [];
 
         if (editIndex >= 0) {
-            // Editar producto existente
             productos[editIndex] = producto;
-            editIndex = -1; // Resetear índice de edición
+            editIndex = -1; // Resetear editIndex
         } else {
-            // Agregar nuevo producto
             productos.push(producto);
         }
 
         localStorage.setItem('productos', JSON.stringify(productos));
         document.getElementById('producto-form').reset();
-        cargarProductos(); // Actualiza la tabla
+        cargarProductos();
     });
 
     function cargarProductos() {
@@ -83,7 +80,6 @@ import Layout from "../layouts/Layout.astro"
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                     <input type="checkbox" class="seleccionar-producto" data-index="${index}">
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">${index + 1}</td>
                 <td class="text-sm text-white font-light px-6 py-4 whitespace-nowrap">${producto.nombre}</td>
                 <td class="text-sm text-white font-light px-6 py-4 whitespace-nowrap">${producto.peso}</td>
                 <td class="text-sm text-white font-light px-6 py-4 whitespace-nowrap">${producto.pesoBruto}</td>
@@ -103,17 +99,16 @@ import Layout from "../layouts/Layout.astro"
         const productos = JSON.parse(localStorage.getItem('productos')) || [];
         const producto = productos[index];
 
-        // Rellenar los campos del formulario con los datos del producto
         document.getElementById('nombre').value = producto.nombre;
         document.getElementById('peso').value = producto.peso;
         document.getElementById('pesoBruto').value = producto.pesoBruto;
 
-        editIndex = index; // Guardar el índice de edición
+        editIndex = index;
     }
 
     function borrarProductos() {
-        localStorage.removeItem('productos'); // Eliminar productos del localStorage
-        cargarProductos(); // Recargar la tabla
+        localStorage.removeItem('productos');
+        cargarProductos();
     }
 
     document.getElementById('borrar-productos').addEventListener('click', borrarProductos);
