@@ -36,9 +36,15 @@ import Card from '../components/Card.astro';
         const password = document.getElementById('password').value;
 
         if (email && password) {
-            window.location.href = '/perfiles';
+            // Simulate login success and redirect with user info
+            const usuario = {
+                nombreUsuario: "Victor",  // Replace with actual user name
+                rolUsuario: "Gerente"       // Replace with actual role
+            };
+            const queryParams = new URLSearchParams(usuario);
+            window.location.href = '/perfiles?' + queryParams.toString();
         } else {
             alert("Por favor, complete todos los campos obligatorios.");
         }
-	});
+    });
 </script>
